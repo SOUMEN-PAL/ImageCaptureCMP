@@ -51,6 +51,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0-beta03")
+            api("dev.icerock.moko:permissions:0.19.1")
+            api("dev.icerock.moko:permissions-compose:0.19.1")
+            implementation("dev.icerock.moko:permissions-camera:0.19.1")
 
         }
         commonTest.dependencies {
