@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,8 @@ import dev.icerock.moko.permissions.RequestCanceledException
 import dev.icerock.moko.permissions.camera.CAMERA
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -36,6 +39,7 @@ data object HomeRoute
 @Serializable
 data object ImageCaptureRoute
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun Navigation(){
     val navController = rememberNavController()
@@ -53,6 +57,7 @@ fun Navigation(){
             locationPermissionState = PermissionState.Granted
         } catch (e: DeniedAlwaysException) {
             locationPermissionState = PermissionState.DeniedAlways
+            controller.openAppSettings()
         } catch (e: DeniedException) {
             locationPermissionState = PermissionState.Denied
         } catch (e: RequestCanceledException) {
@@ -81,6 +86,12 @@ fun Navigation(){
                 )
             }
 
+            val data = remember {
+                mutableStateOf("")
+            }
+
+            val scope = rememberCoroutineScope()
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -88,10 +99,13 @@ fun Navigation(){
             ) {
                 Button(
                     onClick = {
-                        navController.navigate(ImageCaptureRoute)
+                        scope.launch {
+                            TakePhoto().let {
+                                data.value = it ?: "No photo taken"
+                            }
+                        }
                     }
                 ) {
-                    val data = CameraResultBridge.photoPathFlow.collectAsState()
                     Text("Go to Camera ${data.value}")
                 }
             }

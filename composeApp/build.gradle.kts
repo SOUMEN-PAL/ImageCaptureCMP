@@ -55,6 +55,11 @@ kotlin {
             api("dev.icerock.moko:permissions-compose:0.19.1")
             implementation("dev.icerock.moko:permissions-camera:0.19.1")
 
+            //DI Dependencies
+            api(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
